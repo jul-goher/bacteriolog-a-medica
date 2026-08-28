@@ -1,2 +1,2 @@
 # bacteriología medica
-tabals bioquimicas
+tablas bioquimicas
