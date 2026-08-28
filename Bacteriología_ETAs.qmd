@@ -1,0 +1,259 @@
+---
+title: "ETAs_Bacteriología"
+author: "Julieta González., Lilith Martinez., Blanca Osornio, Joaquín Paredes"
+format: html
+editor: visual
+---
+
+## Tabla Interactiva
+
+La siguiente tabla permite consultar los resultados de
+diferentes pruebas metabólicas utilizadas para la identificación de patógenos asociados a ETAs.
+
+Para consultar información adicional sobre una prueba,
+coloque el cursor sobre el resultado.
+
+*Instrucciones*: Coloque el cursor sobre una prueba para consultar diversas características.
+
+- Tipo de prueba
+- Especie
+- Resultado
+- Reactivo utilizado
+- Reacción/producto detectado
+
+```{r, echo=FALSE}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(gt)
+  library(plotly)
+})
+ 
+```
+
+```{r, echo=FALSE}
+############### PRUEBAS BIOQUÍMICAS TABLA INTERACTIVA
+
+## Generar data.frame con nombres y resultados por columna
+bacterias <- data.frame (
+  ## Nombres
+  Bacteria = c(
+    "Escherichia coli", #1
+    "Listeria monocytogenes", #2
+    "Salmonella enteritidis", #3
+    "Salmonella paratyphi A", #4
+    "Salmonella typhi", #5
+    "Shigella boydii", #6 
+    "Shigella dysenteriae", #7
+    "Shigella flexneri", #8
+    "Shigella sonnei", #9
+    "Staphylococcus aureus", #10
+    "Vibrio cholerae", #11
+    "Vibrio parahaemolyticus", #12
+    "Yersinia enterocolitica" #13
+              ), 
+  
+  ## Pruebas
+  Catalasa = c("+", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+"),
+  Oxidasa = c("-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "+", "+", "-"),
+  Coagulasa = c("-", "-", "-", "-", "-", "-", "-", "-", "-", "+", "-", "-", "-"),
+  Citrato = c("-", "-", "+", "-", "-", "-", "-", "-", "-", "+", "-", "+", "-"),
+  
+  # MIO y SIM 
+  Movilidad = c("+", "+", "+", "+", "+", "-", "-", "-", "-", "-", "+", "+", "-/+"),
+  Indol = c("+", "-", "-", "-", "-", "-/+", "-/+", "-/+", "-", "-", "+", "+", "-/+"),
+  Ornitina = c("-/+", "-", "+", "+", "-", "-", "-", "-", "+", "+", "+", "+", "+"),
+  H2S = c("-", "-", "+", "-/+", "+", "-", "-", "-", "-", "-", "-", "-", "-"),
+  
+  # TSI/KIA
+  KA = c("K/A o A/A", "A/A", "K/A", "K/A", "K/A", "K/A", "K/A", "K/A", "K/A", "A/A", "K/A", "K/A", "K/A"),
+  
+  Glucosa = c("+", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+"),
+  Sacarosa = c("+", "+", "-", "-", "-", "-", "-", "-", "-", "+", "+", "-", "+"),
+  Lactosa = c("+", "+", "-", "-", "-", "-", "-", "-", "-", "+", "-", "-", "-"),
+  Gas = c("+", "-", "+", "+", "-", "-", "-", "-", "-", "-", "-", "-", "-"),
+  
+  #LIA
+  L.descarboxilasa = c("+", "NA", "+", "-", "-", "-", "-", "-", "-", "NA", "+", "+", "-"),
+  L.desaminasa = c("-", "NA", "-", "-", "-", "-", "-", "-", "-", "NA", "-", "-", "-"),
+  
+  # las demás---
+  VP = c("-", "+", "-", "-", "-", "-", "-", "-", "-", "+", "-", "-", "-"),
+  Urea = c("-", "-", "-", "-", "-", "-", "-", "-", "-", "+", "-", "-/+", "-/+"),
+  Rojo_metilo = c("+", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+"),
+  Gelatina = c("-", "-", "-", "-", "-", "-", "-", "-", "-", "+", "-", "+", "-"),
+  Nitrato = c("+", "-", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+", "+"),
+  Malonato = c("-", "-", "-", "-", "-", "-", "-", "-", "-", "+", "-", "+", "-"),
+  ONPG = c("+", "-", "-", "-", "-", "-", "-", "-", "+", "-/+", "+", "-", "+")
+) #fin tabla
+
+## Generar HTML con gt 
+#install.packages("gt")
+library(gt)
+ 
+## AñDIR subtítulos
+tabla <- gt(bacterias) |> 
+  tab_spanner ( label = "MIO y SIM",
+    columns = c(Movilidad, Indol, Ornitina, H2S) ) |>
+  
+  tab_spanner( label = "TSI/KIA",
+    columns = c(KA, Glucosa, Sacarosa, Lactosa, Gas) ) |>
+  
+  tab_spanner( label = "LIA",
+    columns = c(L.descarboxilasa, L.desaminasa) ) |> 
+  
+  tab_spanner( label = " ",
+    columns = c(VP, Urea, Rojo_metilo, Gelatina, Nitrato, Malonato, ONPG) )
+ 
+### Añadir información 
+info.pruebas <- data.frame( 
+  Prueba = c(
+    "Catalasa",
+    "Oxidasa",
+    "Coagulasa",
+    "Citrato",
+    "Movilidad",
+    "Indol",
+    "Ornitina",
+    "H2S",
+    "KA",
+    "Glucosa",
+    "Sacarosa",
+    "Lactosa",
+    "Gas",
+    "L.descarboxilasa",
+    "L.desaminasa",
+    "VP",
+    "Urea",
+    "Rojo_metilo",
+    "Gelatina",
+    "Nitrato",
+    "Malonato",
+    "ONPG"
+  ),
+  
+  nombre = c(
+    "Catalasa",
+    "Oxidasa",
+    "Coagulasa",
+    "Citrato de Simmons",
+    "Movilidad",
+    "Indol",
+    "Ornitina",
+    "Producción de H₂S",
+    "TSI/KIA",
+    "Fermentación de glucosa",
+    "Fermentación de sacarosa",
+    "Fermentación de lactosa",
+    "Producción de gas",
+    "Descarboxilación de lisina",
+    "Desaminación de lisina",
+    "Voges-Proskauer",
+    "Ureasa",
+    "Rojo de metilo",
+    "Gelatinasa",
+    "Reducción de nitrato",
+    "Utilización de malonato",
+    "ONPG"
+  ),
+  
+  Fundamento = c(
+    "Detecta la actividad de la enzima catalasa mediante la degradación del peróxido de hidrógeno.",
+    "Detecta la presencia de la enzima citocromo c oxidasa.",
+    "Detecta la producción de coagulasa, enzima capaz de coagular el plasma.",
+    "Evalúa la capacidad de utilizar citrato como fuente de carbono.",
+    "Evalúa la capacidad del microorganismo para desplazarse mediante estructuras de movilidad.",
+    "Detecta la producción de indol a partir de triptófano.",
+    "Evalúa la descarboxilación de ornitina.",
+    "Detecta la producción de sulfuro de hidrógeno.",
+    "Evalúa la fermentación de carbohidratos, producción de gas y H₂S.",
+    "Evalúa la fermentación de glucosa.",
+    "Evalúa la fermentación de sacarosa.",
+    "Evalúa la fermentación de lactosa.",
+    "Detecta la producción de gas durante la fermentación.",
+    "Detecta la descarboxilación de lisina.",
+    "Detecta la desaminación de lisina.",
+    "Detecta la producción de acetoin.",
+    "Detecta la hidrólisis de urea mediante ureasa.",
+    "Detecta la producción de ácidos derivados de la fermentación de glucosa.",
+    "Detecta la hidrólisis de gelatina.",
+    "Evalúa la capacidad de reducir nitrato.",
+    "Evalúa la utilización de malonato como fuente de carbono.",
+    "Detecta la actividad β-galactosidasa."
+  ),
+  
+  Reactivo = c(
+    "H₂O₂",
+    "Reactivo de oxidasa",
+    "Plasma",
+    "Citrato de Simmons",
+    "Medio semisólido",
+    "Reactivo de Kovac",
+    "Medio con ornitina",
+    "Tiosulfato + Fe³⁺",
+    "Medio TSI/KIA",
+    "Carbohidrato + indicador",
+    "Carbohidrato + indicador",
+    "Carbohidrato + indicador",
+    "Campana Durham / TSI",
+    "LIA",
+    "LIA",
+    "Reactivos de VP",
+    "Medio con urea",
+    "Rojo de metilo",
+    "Gelatina",
+    "Medio con nitrato",
+    "Malonato",
+    "ONPG"
+  )
+)
+ 
+
+
+## Añadir infoa tabla
+library(tidyr)
+library(dplyr)
+tabla2 <- bacterias |> pivot_longer ( cols = -Bacteria, 
+                                      names_to = "Prueba", 
+                                      values_to = "Resultado" )
+
+tabla2 <- tabla2 |> left_join(info.pruebas, by = "Prueba")
+
+
+## Graficar 
+library(ggplot2)
+library(plotly)
+
+p.bacter <- ggplot( tabla2, aes( x = Prueba, y = Bacteria, fill = Resultado,
+    text = paste0(
+      "<b>", nombre, "</b>",
+      "<br><br>",
+      "<b>Bacteria:</b> ", Bacteria,
+      "<br><b>Resultado:</b> ", Resultado,
+      "<br><br><b>Fundamento:</b> ", Fundamento,
+      "<br><b>Reactivo:</b> ", Reactivo
+    )
+  )
+) +
+  geom_tile(color = "white") + 
+  # geom_text(aes(label = Resultado)) +
+  theme( axis.text.x = element_text( angle = 45, hjust = 1 ))
+  
+```
+
+## Resultados de Pruebas Bioquímicas    
+
+```{r}
+
+
+ggplotly(p.bacter, tooltip = "text")
+   
+
+```
+
+*Bibliografía*
+
+Iannone R, Cheng J, Schloerke B, Haughton S, Hughes E, Lauer A, François R, Seo J, Brevoort K, Roy O (2026). *gt: Easily Create Presentation-Ready Display Tables*. doi:10.32614/CRAN.package.gt <https://doi.org/10.32614/CRAN.package.gt>, R package version 1.3.0, <https://CRAN.R-project.org/package=gt>.
+
+Sievert, C. Interactive Web-Based Data Visualization with R, plotly, and shiny. Chapman and Hall/CRC Florida, 2020.
+
+R Core Team (2026). *R: A Language and Environment for Statistical Computing*. R Foundation for Statistical Computing, Vienna, Austria. <https://www.R-project.org/>.
