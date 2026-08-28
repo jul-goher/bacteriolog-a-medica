@@ -1,17 +1,16 @@
 ---
 title: "ETAs_Bacteriología"
 author: "Julieta González., Lilith Martinez., Blanca Osornio, Joaquín Paredes"
-format: html
-editor: visual
+format:
+  html:
+    embed-resources: true
 ---
 
 ## Tabla Interactiva
 
-La siguiente tabla permite consultar los resultados de
-diferentes pruebas metabólicas utilizadas para la identificación de patógenos asociados a ETAs.
+La siguiente tabla permite consultar los resultados de diferentes pruebas metabólicas utilizadas para la identificación de patógenos asociados a ETAs.
 
-Para consultar información adicional sobre una prueba,
-coloque el cursor sobre el resultado.
+Para consultar información adicional sobre una prueba, coloque el cursor sobre el resultado.
 
 *Instrucciones*: Coloque el cursor sobre una prueba para consultar diversas características.
 
@@ -240,7 +239,7 @@ p.bacter <- ggplot( tabla2, aes( x = Prueba, y = Bacteria, fill = Resultado,
   
 ```
 
-## Resultados de Pruebas Bioquímicas    
+## Resultados de Pruebas Bioquímicas
 
 ```{r}
 
