@@ -6,7 +6,7 @@ format:
     embed-resources: true
 ---
 
-## Tabla Interactiva 
+## Tabla Interactiva
 
 La siguiente tabla permite consultar los resultados de diferentes pruebas metabólicas utilizadas para la identificación de patógenos asociados a ETAs.
 
